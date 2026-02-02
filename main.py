@@ -2,7 +2,14 @@ from pathlib import Path
 
 import pendulum
 
-from entry import Entry, ENTRY_FIELDS
+from entry import Entry
+
+ENTRY_FIELDS: dict[int, str] = {
+    0: "work_start",
+    1: "work_end",
+    2: "break_start",
+    3: "break_end",
+}
 
 data_folder: Path = Path(__file__).parent / "data"
 long_term_storage: Path = data_folder / "store.csv"
@@ -48,8 +55,7 @@ print("Please select which time you want to enter: ")
 
 idx: int
 entry_type: str
-for idx in ENTRY_FIELDS:
-    entry_key = ENTRY_FIELDS[idx]["key"]
+for idx, entry_key in ENTRY_FIELDS.items():
     print(idx, entry_key)
 
 choice = input("> ")

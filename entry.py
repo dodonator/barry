@@ -4,13 +4,6 @@ from typing import Optional
 
 from pendulum import DateTime, Duration
 
-ENTRY_FIELDS = {
-    0: {"key": "work_start", "needs": []},
-    1: {"key": "work_end", "needs": ["work_start"]},
-    2: {"key": "break_start", "needs": ["work_start"]},
-    3: {"key": "break_end", "needs": ["work_start", "break_start"]},
-}
-
 
 class Entry:
     entry_id: uuid.UUID
@@ -92,14 +85,48 @@ class Entry:
         """Sets entry field to given value.
 
         Dependencies for field must be fulfilled."""
-        key: str = ENTRY_FIELDS[field]["key"]
-        dependencies: list[str] = ENTRY_FIELDS[field]["needs"]
-        for dep in dependencies:
-            if getattr(self, dep) is None:
-                # ToDo: raise Exception
+        match field:
+            case 0:
+                self._set_work_start(value)
+            case 1:
+                self._set_work_end(value)
+            case 2:
+                self._set_break_start(value)
+            case 3:
+                self._set_break_end(value)
+            case _:
                 return
 
-        setattr(self, key, value)
+    def _set_work_start(self, dt: DateTime) -> None:
+        if self.work_end is not None:
+            assert dt < self.work_end, "work start must happen before the work end"
+        self.work_start = dt
+
+    def _set_work_end(self, dt: DateTime) -> None:
+        assert self.work_start is not None, "don't set end of work, if start is missing"
+        assert dt > self.work_start, "work end must happen after the work start"
+        self.work_end = dt
+
+    def _set_break_start(self, dt: DateTime) -> None:
+        assert self.work_start is not None, (
+            "before any break there has to be a work start"
+        )
+        assert dt > self.work_start, "break must happen after the work start"
+        if self.work_end is not None:
+            assert dt < self.work_end, "break must be started before the work end"
+
+        self.break_start = dt
+
+    def _set_break_end(self, dt: DateTime) -> None:
+        assert self.work_start is not None and self.break_start is not None, (
+            "don't set end of break, without start of work / break"
+        )
+        assert dt > self.break_start, "end of break must happen after start of break"
+
+        if self.work_end is not None:
+            assert dt < self.work_end, "break must be finished before work end"
+
+        self.break_end = dt
 
     def dumps(self) -> str:
         """Returns JSON data of the entry as a string."""
