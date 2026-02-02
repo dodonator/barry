@@ -7,17 +7,18 @@ from pendulum import DateTime, Duration
 
 class Entry:
     entry_id: uuid.UUID
-    work_start: DateTime
-    work_end: DateTime
-    break_start: DateTime
-    break_end: DateTime
+    work_start: DateTime | None
+    work_end: DateTime | None
+    break_start: DateTime | None
+    break_end: DateTime | None
+    comment: str | None
 
     def __init__(
         self,
-        work_start: Optional[DateTime],
-        work_end: Optional[DateTime],
-        break_start: Optional[DateTime],
-        break_end: Optional[DateTime],
+        work_start: Optional[DateTime] = None,
+        work_end: Optional[DateTime] = None,
+        break_start: Optional[DateTime] = None,
+        break_end: Optional[DateTime] = None,
         comment: Optional[str] = None,
     ):
         # create uuid
