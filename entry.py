@@ -62,3 +62,19 @@ class Entry:
             return None
 
         return total_time - break_time
+
+    def is_finished(self) -> bool:
+        """Returns True if the entry contains all mandatory times.
+
+        Work start time and work end time are always required.
+        Break start time is required, if a break end time is provided.
+        Break end time is required, if a break start time is provided.
+        Comments are always optional.
+        """
+        if self.work_start is None or self.work_end is None:
+            return False
+
+        if self.break_start is None and self.break_end is None:
+            return True
+
+        return False
