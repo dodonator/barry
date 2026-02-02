@@ -1,7 +1,7 @@
 import csv
-from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
+import pendulum
 
 FILENAME: str = "data.csv"
 FIELDNAMES: tuple[str, ...] = ("datetime", "type")
@@ -36,18 +36,28 @@ def main():
     current_data: list[dict] = read_csv(store)
 
     # read entry date from user
-    e_day_str: str = input("Enter the day (leave blank for today) [dd.mm.yyyy]: ")
+    e_day_str: str = input("Enter the day (leave blank for today): ")
+    e_day: pendulum.Date
     if not e_day_str:
-        e_day: date = date.today()
+        e_day = pendulum.today("local").date()
     else:
-        e_day: date = datetime.strptime(e_day_str, "%d.%m.%Y").date()
+        e_day = pendulum.parse(e_day_str, strict=False).date()
 
     # read entry time from user
     e_time_str: str = input("Enter time (leave blank for now) [hh:mm]: ")
+    e_time: pendulum.Time
     if not e_time_str:
-        e_time: datetime = datetime.now()
+        e_time = pendulum.now().time()
     else:
-        e_time = datetime.strptime(e_time_str, "%H:%M")
+        e_time = pendulum.parse(e_time_str, strict=False).time()
+
+    e_datetime: pendulum.DateTime = pendulum.datetime(
+        year=e_day.year,
+        month=e_day.month,
+        day=e_day.day,
+        hour=e_time.hour,
+        minute=e_time.minute,
+    )
 
     # read type of entry
     entry_types: tuple[str, ...] = (
@@ -64,7 +74,7 @@ def main():
     entry_type: int = int(input("Type of entry: "))
 
     # write data to file
-    current_data.append({"datetime": e_time.isoformat(), "type": entry_type})
+    current_data.append({"datetime": e_datetime.isoformat(), "type": entry_type})
     write_csv(store, current_data)
 
 
