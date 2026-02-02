@@ -83,14 +83,21 @@ class Entry:
 
     def dumps(self) -> str:
         """Returns JSON data of the entry as a string."""
-
         json_data = {
             "entry_id": str(self.entry_id),
-            "work_start": self.work_start.isoformat(),
-            "work_end": self.work_end.isoformat(),
-            "break_start": self.break_start.isoformat(),
-            "break_end": self.break_end.isoformat(),
-            "comment": self.comment,
+            "work_start": self.work_start.isoformat()
+            if self.work_start is not None
+            else None,
+            "work_end": self.work_end.isoformat()
+            if self.work_end is not None
+            else None,
+            "break_start": self.break_start.isoformat()
+            if self.break_start is not None
+            else None,
+            "break_end": self.break_end.isoformat()
+            if self.break_end is not None
+            else None,
+            "comment": self.comment if self.comment is not None else None,
         }
         return json.dumps(json_data, indent=4)
 
@@ -98,12 +105,24 @@ class Entry:
     def loads(json_str: str) -> Entry:
         """Loads Entry from JSON data."""
         json_data = json.loads(json_str)
+        work_start = json_data["work_start"]
+        work_end = json_data["work_end"]
+        break_start = json_data["break_start"]
+        break_end = json_data["break_end"]
+        comment = json_data.get("comment")
+
         entry = Entry(
-            work_start=DateTime.fromisoformat(json_data["work_start"]),
-            work_end=DateTime.fromisoformat(json_data["work_end"]),
-            break_start=DateTime.fromisoformat(json_data["break_start"]),
-            break_end=DateTime.fromisoformat(json_data["break_end"]),
-            comment=json_data["comment"],
+            work_start=DateTime.fromisoformat(work_start)
+            if work_start is not None
+            else None,
+            work_end=DateTime.fromisoformat(work_end) if work_end is not None else None,
+            break_start=DateTime.fromisoformat(break_start)
+            if break_start is not None
+            else None,
+            break_end=DateTime.fromisoformat(break_end)
+            if break_end is not None
+            else None,
+            comment=comment,
         )
         entry.entry_id = uuid.UUID(json_data["entry_id"])
         return entry
