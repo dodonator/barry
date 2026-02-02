@@ -4,15 +4,15 @@ from typing import Optional
 
 from pendulum import DateTime, Duration
 
+ENTRY_FIELDS = {
+    0: {"key": "work_start", "needs": []},
+    1: {"key": "work_end", "needs": ["work_start"]},
+    2: {"key": "break_start", "needs": ["work_start"]},
+    3: {"key": "break_end", "needs": ["work_start", "break_start"]},
+}
+
 
 class Entry:
-    ENTRY_TIMES = {
-        0: "work_start",
-        1: "work_end",
-        2: "break_start",
-        3: "break_end",
-    }
-
     entry_id: uuid.UUID
     work_start: DateTime | None
     work_end: DateTime | None
@@ -88,14 +88,18 @@ class Entry:
 
         return False
 
-    def set(self, field: str | int, value: DateTime) -> None:
+    def set(self, field: int, value: DateTime) -> None:
         """Sets entry field to given value.
 
-        Field can be defined by integer or string."""
-        if isinstance(field, int):
-            field = self.ENTRY_TIMES[field]
-        assert field in self.ENTRY_TIMES.values()
-        setattr(self, field, value)
+        Dependencies for field must be fulfilled."""
+        key: str = ENTRY_FIELDS[field]["key"]
+        dependencies: list[str] = ENTRY_FIELDS[field]["needs"]
+        for dep in dependencies:
+            if getattr(self, dep) is None:
+                # ToDo: raise Exception
+                return
+
+        setattr(self, key, value)
 
     def dumps(self) -> str:
         """Returns JSON data of the entry as a string."""
