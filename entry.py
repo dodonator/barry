@@ -1,3 +1,4 @@
+import json
 import uuid
 from typing import Optional
 
@@ -78,3 +79,30 @@ class Entry:
             return True
 
         return False
+
+    def dumps(self) -> str:
+        """Returns JSON data of the entry as a string."""
+
+        json_data = {
+            "entry_id": str(self.entry_id),
+            "work_start": self.work_start.isoformat(),
+            "work_end": self.work_end.isoformat(),
+            "break_start": self.break_start.isoformat(),
+            "break_end": self.break_end.isoformat(),
+            "comment": self.comment,
+        }
+        return json.dumps(json_data, indent=4)
+
+    @staticmethod
+    def loads(self, json_str: str) -> Entry:
+        """Loads Entry from JSON data."""
+        json_data = json.loads(json_str)
+        entry = Entry(
+            work_start=DateTime.fromisoformat(json_data["work_start"]),
+            work_end=DateTime.fromisoformat(json_data["work_end"]),
+            break_start=DateTime.fromisoformat(json_data["break_start"]),
+            break_end=DateTime.fromisoformat(json_data["break_end"]),
+            comment=json_data["comment"],
+        )
+        entry.entry_id = uuid.UUID(json_data["entry_id"])
+        return entry
