@@ -6,6 +6,13 @@ from pendulum import DateTime, Duration
 
 
 class Entry:
+    ENTRY_TIMES = {
+        0: "work_start",
+        1: "work_end",
+        2: "break_start",
+        3: "break_end",
+    }
+
     entry_id: uuid.UUID
     work_start: DateTime | None
     work_end: DateTime | None
@@ -80,6 +87,15 @@ class Entry:
             return True
 
         return False
+
+    def set(self, field: str | int, value: DateTime) -> None:
+        """Sets entry field to given value.
+
+        Field can be defined by integer or string."""
+        if isinstance(field, int):
+            field = self.ENTRY_TIMES[field]
+        assert field in self.ENTRY_TIMES.values()
+        setattr(self, field, value)
 
     def dumps(self) -> str:
         """Returns JSON data of the entry as a string."""

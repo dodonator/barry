@@ -4,13 +4,6 @@ import pendulum
 
 from entry import Entry
 
-ENTRY_TIMES = {
-    0: "work_start",
-    1: "work_end",
-    2: "break_start",
-    3: "break_end",
-}
-
 data_folder: Path = Path(__file__).parent / "data"
 long_term_storage: Path = data_folder / "store.csv"
 short_term_storage: Path = data_folder / "short.json"
@@ -55,13 +48,11 @@ print("Please select which time you want to enter: ")
 
 idx: int
 entry_type: str
-for idx, entry_key in ENTRY_TIMES.items():
+for idx, entry_key in Entry.ENTRY_TIMES.items():
     print(idx, entry_key)
 
 choice = input("> ")
-entry_type = ENTRY_TIMES[int(choice)]  # ToDo: error handling
-
-setattr(entry, entry_type, entry_datetime)  # ToDo: dedicated Entry.set method
+entry.set(int(choice), entry_datetime)
 
 with short_term_storage.open("w") as file:
     file.write(entry.dumps())
