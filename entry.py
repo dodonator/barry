@@ -1,7 +1,6 @@
 import uuid
 from typing import Optional
 
-import pendulum
 from pendulum import DateTime, Duration
 
 
@@ -29,17 +28,37 @@ class Entry:
         self.break_end = break_end
         self.comment = comment
 
-    def worktime(self) -> Duration:
-        """Returns the work time of the entry.
+    def total_time(self) -> Duration | None:
+        """Returns the total time, disregarding the break.
 
-        Deducts the break from the work time.
+        Returns None if times are undefined.
         """
         if self.work_start is None or self.work_end is None:
-            return pendulum.duration(0)
+            return None
+        return self.work_end - self.work_start
 
-        work_time: pendulum.Duration = self.work_end - self.work_start
+    def breaktime(self) -> Duration | None:
+        """Returns the break time of the entry.
+
+        Returns None if times are undefined.
+        """
         if self.break_start is None or self.break_end is None:
-            return work_time
+            return None
 
-        break_time: pendulum.Duration = self.break_end - self.break_start
-        return work_time - break_time
+        return self.break_end - self.break_start
+
+    def worktime(self) -> Duration | None:
+        """Returns the actual work time.
+
+        Deducts the break from the total time.
+        Returns None if times are undefined.
+        """
+        total_time = self.total_time()
+        if total_time is None:
+            return None
+
+        break_time: Duration | None = self.breaktime()
+        if break_time is None:
+            return None
+
+        return total_time - break_time
