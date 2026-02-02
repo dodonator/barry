@@ -94,7 +94,7 @@ class Entry:
         return json.dumps(json_data, indent=4)
 
     @staticmethod
-    def loads(self, json_str: str) -> Entry:
+    def loads(json_str: str) -> Entry:
         """Loads Entry from JSON data."""
         json_data = json.loads(json_str)
         entry = Entry(
