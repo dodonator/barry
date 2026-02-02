@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 FILENAME: str = "data.csv"
@@ -18,12 +18,19 @@ if store.exists():
 else:
     data: list[dict] = []
 
-# read time from user
-entry: str = input("Enter time (hh:mm): ")
-if not entry:
-    entry_dt: datetime = datetime.now()
+# read entry date from user
+e_day_str: str = input("Enter the day (leave blank for today) [dd.mm.yyyy]: ")
+if not e_day_str:
+    e_day: date = date.today()
 else:
-    entry_dt = datetime.strptime(entry, "%H:%M")
+    e_day: date = datetime.strptime(e_day_str, "%d.%m.%Y").date()
+
+# read entry time from user
+e_time_str: str = input("Enter time (leave blank for now) [hh:mm]: ")
+if not e_time_str:
+    e_time: datetime = datetime.now()
+else:
+    e_time = datetime.strptime(e_time_str, "%H:%M")
 
 # read type of entry
 entry_types: tuple[str, ...] = (
@@ -39,7 +46,7 @@ for idx, entry_type in enumerate(entry_types):
 
 entry_type: int = int(input("Type of entry: "))
 
-data.append({"datetime": entry_dt.isoformat(), "type": entry_type})
+data.append({"datetime": e_time.isoformat(), "type": entry_type})
 
 # save entry to file
 with store.open("w") as file:
