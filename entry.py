@@ -28,7 +28,7 @@ class Entry:
         self.break_end = break_end
         self.comment = comment
 
-    def total_time(self) -> Duration | None:
+    def total_duration(self) -> Duration | None:
         """Returns the total time, disregarding the break.
 
         Returns None if times are undefined.
@@ -37,7 +37,7 @@ class Entry:
             return None
         return self.work_end - self.work_start
 
-    def breaktime(self) -> Duration | None:
+    def break_duration(self) -> Duration | None:
         """Returns the break time of the entry.
 
         Returns None if times are undefined.
@@ -47,17 +47,17 @@ class Entry:
 
         return self.break_end - self.break_start
 
-    def worktime(self) -> Duration | None:
+    def work_duration(self) -> Duration | None:
         """Returns the actual work time.
 
         Deducts the break from the total time.
         Returns None if times are undefined.
         """
-        total_time = self.total_time()
+        total_time = self.total_duration()
         if total_time is None:
             return None
 
-        break_time: Duration | None = self.breaktime()
+        break_time: Duration | None = self.break_duration()
         if break_time is None:
             return None
 
