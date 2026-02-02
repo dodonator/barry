@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pendulum
 
-from entry import Entry
+from workday import WorkDay
 
 ENTRY_FIELDS: dict[int, str] = {
     0: "work_start",
@@ -20,34 +20,34 @@ if not data_folder.exists():
     data_folder.mkdir()
 
 # load current entry from short term memory
-entry: Entry
+wd: WorkDay
 if short_term_storage.exists():
     json_text: str = short_term_storage.read_text()
-    entry = Entry.loads(json_text)
+    wd = WorkDay.loads(json_text)
 else:
-    entry = Entry()
+    wd = WorkDay()
 
 # user input
-entry_date: pendulum.Date
-entry_date_str: str = input("Please enter the date for the entry: ")
-if not entry_date_str:
-    entry_date = pendulum.today("local")
+wd_date: pendulum.Date
+wd_date_str: str = input("Please enter the date for the entry: ")
+if not wd_date_str:
+    wd_date = pendulum.today("local")
 else:
-    entry_date = pendulum.parse(entry_date_str, strict=False)
+    wd_date = pendulum.parse(wd_date_str, strict=False)
 
-entry_time: pendulum.Time
-entry_time_str: str = input("Please enter the time for the entry: ")
-if not entry_time_str:
-    entry_time = pendulum.now("local").time()
+wd_time: pendulum.Time
+wd_time_str: str = input("Please enter the time for the entry: ")
+if not wd_time_str:
+    wd_time = pendulum.now("local").time()
 else:
-    entry_time = pendulum.parse(entry_time_str, strict=False).time()
+    wd_time = pendulum.parse(wd_time_str, strict=False).time()
 
 entry_datetime = pendulum.datetime(
-    entry_date.year,
-    entry_date.month,
-    entry_date.day,
-    entry_time.hour,
-    entry_time.minute,
+    wd_date.year,
+    wd_date.month,
+    wd_date.day,
+    wd_time.hour,
+    wd_time.minute,
     tz="local",
 )
 
@@ -59,7 +59,7 @@ for idx, entry_key in ENTRY_FIELDS.items():
     print(idx, entry_key)
 
 choice = input("> ")
-entry.set(int(choice), entry_datetime)
+wd.set(int(choice), entry_datetime)
 
 with short_term_storage.open("w") as file:
-    file.write(entry.dumps())
+    file.write(wd.dumps())
