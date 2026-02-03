@@ -43,7 +43,7 @@ def archive_wd(wd: WorkDay, path: Path):
         )
         if mode == "w":
             writer.writeheader()
-        writer.write(data)
+        writer.writerow(data)
 
 
 def ask_for_entry(wd: WorkDay | None = None) -> Entry:
