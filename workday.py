@@ -8,6 +8,8 @@ from entry import Entry
 class WorkDay:
     """A WorkDay contains the time data for the work time and the breaks during one workday."""
 
+    STATES: tuple[str] = ("before_work", "during_work", "during_break", "after_work")
+
     date: Date
     entries: list[Entry]
     state: str
@@ -19,17 +21,16 @@ class WorkDay:
         self.date = date
         self.entries = []
         self.state = "before_work"
-        # Possible states: before_work, during_work, during_break, after_work
 
     def add_entry(self, entry: Entry):
         match entry.entry_type:
-            case "work_start":
+            case str(Entry.WORK_START):
                 self._set_work_start(entry)
-            case "work_end":
+            case Entry.WORK_END:
                 self._set_work_end(entry)
-            case "break_start":
+            case Entry.BREAK_START:
                 self._set_break_start(entry)
-            case "break_end":
+            case Entry.BREAK_END:
                 self._set_break_end(entry)
             case _:
                 return
@@ -71,27 +72,27 @@ class WorkDay:
         Additionally, each workday can have entries defining the breaks.
         For each break start, there has to be a corresponding entry defining the break end.
         """
-        if self.entries[0].entry_type != "work_start":
+        if self.entries[0].entry_type != Entry.WORK_START:
             # return False if work start is missing
             return False
-        if self.entries[-1].entry_type != "work_end":
+        if self.entries[-1].entry_type != Entry.WORK_END:
             # return False if work end is missing
             return False
 
         on_break = False
         for entry in self.entries[1:-1]:
-            if entry.entry_type == "break_start" and on_break:
+            if entry.entry_type == Entry.BREAK_START and on_break:
                 # return False if a break start is in the wrong place
                 return False
 
-            if entry.entry_type == "break_end" and not on_break:
+            if entry.entry_type == Entry.BREAK_END and not on_break:
                 # return False if a break end is in the wrong place
                 return False
 
-            if entry.entry_type == "break_start":
+            if entry.entry_type == Entry.BREAK_START:
                 on_break = True
 
-            if entry.entry_type == "break_end":
+            if entry.entry_type == Entry.BREAK_END:
                 on_break = False
 
         # return False if the state is not "after_work"
@@ -122,10 +123,10 @@ class WorkDay:
             return break_duration
 
         break_starts: list[DateTime] = [
-            entry.dt for entry in self.entries if entry.entry_type == "break_start"
+            entry.dt for entry in self.entries if entry.entry_type == Entry.BREAK_START
         ]
         break_ends: list[DateTime] = [
-            entry.dt for entry in self.entries if entry.entry_type == "break_end"
+            entry.dt for entry in self.entries if entry.entry_type == Entry.BREAK_END
         ]
         break_starts.sort(key=lambda entry: entry.dt)
         break_ends.sort(key=lambda entry: entry.dt)

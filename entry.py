@@ -2,15 +2,15 @@ import uuid
 
 import pendulum
 
-ENTRY_TYPES: dict[int, str] = {
-    0: "work_start",
-    1: "work_end",
-    2: "break_start",
-    3: "break_end",
-}
-
 
 class Entry:
+    WORK_START: str = "work_start"
+    WORK_END: str = "work_end"
+    BREAK_START: str = "break_start"
+    BREAK_END: str = "break_end"
+
+    TYPES: tuple[str, ...] = (WORK_START, WORK_END, BREAK_START, BREAK_END)
+
     entry_id: uuid.UUID
     entry_type: str
     dt: pendulum.DateTime
@@ -20,6 +20,8 @@ class Entry:
         self, dt: pendulum.DateTime, entry_type: str, comment: str | None = None
     ) -> None:
         self.entry_id = uuid.uuid4()
+        if entry_type not in self.TYPES:
+            raise ValueError(f"Invalid entry type: {entry_type}")
         self.entry_type = entry_type
         self.dt = dt
         self.comment = comment
