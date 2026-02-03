@@ -145,7 +145,6 @@ class WorkDay:
         """Returns a dictionary representation of the workday object."""
         workday_dict: dict = {
             "date": self.date.isoformat(),
-            "state": self.state,
             "entries": [entry.to_dict() for entry in self.entries],
         }
         return workday_dict
@@ -160,5 +159,4 @@ class WorkDay:
         for entry in workday_dict["entries"]:
             workday.add_entry(Entry.from_dict(entry))
 
-        workday.state = workday_dict["state"]
         return workday
