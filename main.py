@@ -114,9 +114,10 @@ def main() -> None:
         archive_wd(wd, long_term_storage)
         short_term_storage.unlink()
 
-    with short_term_storage.open("w") as file:
-        json_data = wd.to_dict()
-        json.dump(json_data, file, indent=4)
+    else:
+        with short_term_storage.open("w") as file:
+            json_data = wd.to_dict()
+            json.dump(json_data, file, indent=4)
 
 
 if __name__ == "__main__":
