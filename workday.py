@@ -132,8 +132,8 @@ class WorkDay:
         break_ends: list[DateTime] = [
             entry.dt for entry in self.entries if entry.entry_type == Entry.BREAK_END
         ]
-        break_starts.sort(key=lambda entry: entry.dt)
-        break_ends.sort(key=lambda entry: entry.dt)
+        break_starts.sort()
+        break_ends.sort()
 
         for break_start, break_end in zip(break_starts, break_ends):
             current_break: Duration = break_end - break_start
