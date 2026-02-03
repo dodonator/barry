@@ -12,10 +12,16 @@ long_term_storage: Path = data_folder / "store.csv"
 short_term_storage: Path = data_folder / "short.json"
 
 
-def ask_for_entry() -> Entry:
+def ask_for_entry(wd: WorkDay | None = None) -> Entry:
     """Creates a entry object based on user input."""
+    default_date: Date = pendulum.today("local").date()
+    if wd is not None:
+        default_date = wd.date
+
     # ask for the date
-    e_date_str: str = input("Please enter the date for the entry: ")
+    e_date_str: str = input(
+        f"Please enter the date for the entry (defaults to {default_date.strftime('%Y-%m-%d')}): "
+    )
     e_date: Date
     if not e_date_str:
         # in case of empty input use today
@@ -65,7 +71,7 @@ def main() -> None:
     else:
         wd = WorkDay()
 
-    user_entry = ask_for_entry()
+    user_entry = ask_for_entry(wd)
 
     wd.add_entry(user_entry)
 
