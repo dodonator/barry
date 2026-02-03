@@ -141,6 +141,14 @@ class WorkDay:
 
         return break_duration
 
+    def work_time(self) -> Duration:
+        """Returns the work time by deducting the breaks from the total time."""
+        work_duration: Duration = Duration(0)
+        if not self.is_valid():
+            return work_duration
+
+        return self.total_time() - self.break_time()
+
     def to_dict(self) -> dict:
         """Returns a dictionary representation of the workday object."""
         workday_dict: dict = {
