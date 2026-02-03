@@ -136,3 +136,25 @@ class WorkDay:
             break_duration += current_break
 
         return break_duration
+
+    def to_dict(self) -> dict:
+        """Returns a dictionary representation of the workday object."""
+        workday_dict: dict = {
+            "date": self.date.isoformat(),
+            "state": self.state,
+            "entries": [entry.to_dict() for entry in self.entries],
+        }
+        return workday_dict
+
+    @staticmethod
+    def from_dict(workday_dict: dict) -> WorkDay:
+        """Creates a WorkDay object from a given dictionary."""
+        workday: WorkDay = WorkDay(
+            DateTime.fromisoformat(workday_dict["date"]),
+        )
+        entry: dict
+        for entry in workday_dict["entries"]:
+            workday.add_entry(Entry.from_dict(entry))
+
+        workday.state = workday_dict["state"]
+        return workday
