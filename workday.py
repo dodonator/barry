@@ -110,3 +110,28 @@ class WorkDay:
         start: DateTime = self.entries[0].dt
         end: DateTime = self.entries[-1].dt
         return end - start
+
+    def break_time(self) -> Duration:
+        """Sums up the break times."""
+        break_duration: Duration = Duration(0)
+        if not self.is_valid():
+            return break_duration
+
+        # if only work start and work end are set, break time will be zero
+        if len(self.entries) == 2:
+            return break_duration
+
+        break_starts: list[DateTime] = [
+            entry.dt for entry in self.entries if entry.entry_type == "break_start"
+        ]
+        break_ends: list[DateTime] = [
+            entry.dt for entry in self.entries if entry.entry_type == "break_end"
+        ]
+        break_starts.sort(key=lambda entry: entry.dt)
+        break_ends.sort(key=lambda entry: entry.dt)
+
+        for break_start, break_end in zip(break_starts, break_ends):
+            current_break: Duration = break_end - break_start
+            break_duration += current_break
+
+        return break_duration
