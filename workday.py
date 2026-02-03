@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pendulum import Date
+from pendulum import Date, DateTime, Duration
 
 from entry import Entry
 
@@ -99,3 +99,14 @@ class WorkDay:
             return False
 
         return True
+
+    def total_time(self) -> Duration:
+        """Returns the total work time (including all breaks).
+
+        WorkDay has to be valid.
+        """
+        if not self.is_valid():
+            return Duration(0)
+        start: DateTime = self.entries[0].dt
+        end: DateTime = self.entries[-1].dt
+        return end - start
