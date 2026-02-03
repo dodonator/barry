@@ -59,7 +59,7 @@ def ask_for_entry(wd: WorkDay | None = None) -> Entry:
     e_date: Date
     if not e_date_str:
         # in case of empty input use today
-        e_date = pendulum.today("local")
+        e_date = default_date
     else:
         e_date = pendulum.parse(e_date_str, strict=False)
 
