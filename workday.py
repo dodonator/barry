@@ -44,6 +44,10 @@ class WorkDay:
         self.entries.insert(0, entry)
         self.state = "during_work"
 
+        # if missing set the date
+        if self.date is None:
+            self.date = entry.dt.date()
+
     def _set_work_end(self, entry: Entry):
         if self.state != "during_work":
             return
