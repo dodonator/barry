@@ -12,6 +12,19 @@ long_term_storage: Path = data_folder / "store.csv"
 short_term_storage: Path = data_folder / "short.json"
 
 
+def summarize(wd: WorkDay) -> dict:
+    """Summarize the work day by calculating the actual work time."""
+    if not wd.is_valid():
+        raise Exception("Work day has to be valid")
+    data = {
+        "date": wd.date,
+        "total": wd.total_time(),
+        "breaks": wd.break_time(),
+        "work": wd.total_time() - wd.break_time(),
+    }
+    return data
+
+
 def ask_for_entry(wd: WorkDay | None = None) -> Entry:
     """Creates a entry object based on user input."""
     default_date: Date = pendulum.today("local").date()
