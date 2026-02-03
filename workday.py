@@ -132,8 +132,8 @@ class WorkDay:
         break_ends: list[DateTime] = [
             entry.dt for entry in self.entries if entry.entry_type == Entry.BREAK_END
         ]
-        break_starts.sort(key=lambda entry: entry.dt)
-        break_ends.sort(key=lambda entry: entry.dt)
+        break_starts.sort()
+        break_ends.sort()
 
         for break_start, break_end in zip(break_starts, break_ends):
             current_break: Duration = break_end - break_start
@@ -141,11 +141,18 @@ class WorkDay:
 
         return break_duration
 
+    def work_time(self) -> Duration:
+        """Returns the work time by deducting the breaks from the total time."""
+        work_duration: Duration = Duration(0)
+        if not self.is_valid():
+            return work_duration
+
+        return self.total_time() - self.break_time()
+
     def to_dict(self) -> dict:
         """Returns a dictionary representation of the workday object."""
         workday_dict: dict = {
             "date": self.date.isoformat(),
-            "state": self.state,
             "entries": [entry.to_dict() for entry in self.entries],
         }
         return workday_dict
@@ -160,5 +167,4 @@ class WorkDay:
         for entry in workday_dict["entries"]:
             workday.add_entry(Entry.from_dict(entry))
 
-        workday.state = workday_dict["state"]
         return workday
