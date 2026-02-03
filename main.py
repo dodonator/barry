@@ -1,3 +1,4 @@
+import csv
 import json
 from pathlib import Path
 
@@ -23,6 +24,26 @@ def summarize(wd: WorkDay) -> dict:
         "work": wd.total_time() - wd.break_time(),
     }
     return data
+
+
+def archive_wd(wd: WorkDay, path: Path):
+    """Saves finished work days to long term storage."""
+    mode: str
+    if path.exists():
+        mode = "a"
+    else:
+        mode = "w"
+
+    data = summarize(wd)
+
+    with path.open(mode, encoding="utf-8") as file:
+        writer = csv.DictWriter(
+            file,
+            data.keys(),
+        )
+        if mode == "w":
+            writer.writeheader()
+        writer.write(data)
 
 
 def ask_for_entry(wd: WorkDay | None = None) -> Entry:
@@ -87,6 +108,11 @@ def main() -> None:
     user_entry = ask_for_entry(wd)
 
     wd.add_entry(user_entry)
+
+    # save finished work days to long term storage
+    if wd.is_valid():
+        archive_wd(wd, long_term_storage)
+        short_term_storage.unlink()
 
     with short_term_storage.open("w") as file:
         json_data = wd.to_dict()
