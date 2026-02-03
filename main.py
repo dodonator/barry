@@ -15,7 +15,7 @@ short_term_storage: Path = data_folder / "short.json"
 def ask_for_entry(wd: WorkDay | None = None) -> Entry:
     """Creates a entry object based on user input."""
     default_date: Date = pendulum.today("local").date()
-    if wd is not None:
+    if wd is not None and wd.date is not None:
         default_date = wd.date
 
     # ask for the date
