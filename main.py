@@ -9,7 +9,7 @@ from entry import Entry
 from workday import WorkDay
 
 data_folder: Path = Path(__file__).parent / "data"
-long_term_storage: Path = data_folder / "store.csv"
+long_term_storage: Path = data_folder / "archive.csv"
 short_term_storage: Path = data_folder / "short.json"
 
 
