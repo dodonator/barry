@@ -1,15 +1,11 @@
+import json
 from pathlib import Path
 
 import pendulum
 
+from entry import Entry
 from workday import WorkDay
 
-ENTRY_FIELDS: dict[int, str] = {
-    0: "work_start",
-    1: "work_end",
-    2: "break_start",
-    3: "break_end",
-}
 
 data_folder: Path = Path(__file__).parent / "data"
 long_term_storage: Path = data_folder / "store.csv"
@@ -22,12 +18,12 @@ if not data_folder.exists():
 # load current entry from short term memory
 wd: WorkDay
 if short_term_storage.exists():
-    json_text: str = short_term_storage.read_text()
-    wd = WorkDay.loads(json_text)
+    json_data = json.loads(short_term_storage.read_text())
+    wd = WorkDay.from_dict(json_data)
 else:
     wd = WorkDay()
 
-# user input
+# create entry based on user input
 wd_date: pendulum.Date
 wd_date_str: str = input("Please enter the date for the entry: ")
 if not wd_date_str:
@@ -55,11 +51,18 @@ print("Please select which time you want to enter: ")
 
 idx: int
 entry_type: str
-for idx, entry_key in ENTRY_FIELDS.items():
+for idx, entry_key in enumerate(Entry.TYPES):
     print(idx, entry_key)
 
 choice = input("> ")
-wd.set(int(choice), entry_datetime)
+entry_type: str = Entry.TYPES[int(choice)]
+
+comment: str = input("Comment for this entry: ")
+
+entry: Entry = Entry(entry_datetime, entry_type, comment)
+
+wd.add_entry(entry)
 
 with short_term_storage.open("w") as file:
-    file.write(wd.dumps())
+    json_data = wd.to_dict()
+    json.dump(json_data, file, indent=4)
